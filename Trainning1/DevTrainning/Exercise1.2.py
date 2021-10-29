@@ -1,23 +1,21 @@
-import csv
-import pandas as pd
-import mysql.connector as MySQL
-from mysql.connector import Error
-from sqlalchemy import create_engine
+from selenium import webdriver
+from selenium.webdriver.edge.service import Service
 
-df = pd.read_csv('customer.csv')
+url = "http://45.79.43.178/source_carts/wordpress/wp-admin/"
+s = Service("C:\Program Files (x86)\chromedriver.exe")
+driver = webdriver.Chrome(service = s)
+driver.maximize_window()
+driver.get(url)
 
-engine =create_engine('mysql+mysqldb://root:@localhost/php_dev')
-conn = MySQL.connect(host="localhost",user ="root", passwd="",database="php_dev" )
-cursor = conn.cursor()
+username_textbox =driver.find_element_by_id("user_login")
+username_textbox.send_keys("admin")
 
-if conn.is_connected():
-    cursor.execute('DROP TABLE IF EXISTS customer')
-    cursor.execute("""CREATE TABLE customer( customerid int not null primary key,
-    firstname varchar(255),lastname varchar(255), companyname varchar(255),
-    billingaddress1 varchar(255),billingaddress2 varchar(255),
-    city varchar(255),state varchar(255),postalcode varchar(255),country varchar(255),
-    phonenumber varchar(255),emailaddress varchar(255),createddate varchar(255));""")
-df.to_sql(name='customer',con=engine,if_exists='replace')
-conn.commit()
-cursor.close()
-conn.close()
+pass_texbox =driver.find_element_by_id("user_pass")
+pass_texbox.send_keys("123456aA")
+
+login_button = driver.find_element_by_id("wp-submit")
+login_button.submit()
+
+getname = driver.find_element_by_class_name("display-name").text
+
+print(getname)
